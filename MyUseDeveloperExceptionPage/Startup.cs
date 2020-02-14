@@ -21,19 +21,27 @@ namespace MyUseDeveloperExceptionPage
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            env.EnvironmentName = "Production";
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
+            else
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
+                app.UseExceptionHandler("/error");
+            }
+            app.Map("/error", ap => ap.Run(async context =>
+              {
+                  await context.Response.WriteAsync("DivideByZeroException occured");
+              }));
+
+            //app.UseRouting();
+
+            app.Run(async (context) =>
+            {
+                int x = 0;
+                int y = 8;
+                await context.Response.WriteAsync($"{y/x}");
             });
         }
     }
