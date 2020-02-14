@@ -21,10 +21,15 @@ namespace MyUseDeveloperExceptionPage
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseStatusCodePages("text/plain", "Error. Page not found, code = {0}");
-            app.Map("/hello", ap => ap.Run(async (context)=>
+            app.UseStatusCodePagesWithReExecute("/error", "?code={0}");
+            //app.UseStatusCodePages("text/plain", "Error. Page not found, code = {0}");
+            app.Map("/error", ap => ap.Run(async (context) =>
             {
-                await context.Response.WriteAsync($"Page not found");
+                await context.Response.WriteAsync($"Error. {context.Request.Query["code"]}");
+            }));
+            app.Map("/hello", ap => ap.Run(async (context) =>
+            {
+                await context.Response.WriteAsync("Hello");
             }));
             //env.EnvironmentName = "Production";
             //if (env.IsDevelopment())
